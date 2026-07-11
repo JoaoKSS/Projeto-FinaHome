@@ -13,7 +13,22 @@ namespace Backend.Data
         {
         }
 
-        // Tabela de pessoas no banco de dados
+        // Tabela de pessoas
         public DbSet<Person> People => Set<Person>();
+
+        // Tabela de transações
+        public DbSet<Transaction> Transactions => Set<Transaction>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Relacionamento com deleção em cascata
+            modelBuilder.Entity<Transaction>()
+                .HasOne(t => t.Person)
+                .WithMany(p => p.Transactions)
+                .HasForeignKey(t => t.PersonId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }
