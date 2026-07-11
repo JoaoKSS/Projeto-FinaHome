@@ -2,7 +2,7 @@ namespace Backend.Models
 {
     public class Person
     {
-        // Identificador unico gerado automaticamente pelo banco
+        // Identificador unico
         public int Id { get; set; }
 
         // Nome da pessoa
@@ -11,7 +11,7 @@ namespace Backend.Models
         // Idade
         public int Age { get; set; }
 
-        // Coleção de transações vinculadas a esta pessoa
+        // Transações vinculadas a pessoa
         [System.Text.Json.Serialization.JsonIgnore]
         public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     }

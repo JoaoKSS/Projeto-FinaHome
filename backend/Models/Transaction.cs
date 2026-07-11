@@ -34,7 +34,7 @@ namespace Backend.Models
         [Required(ErrorMessage = "O identificador da pessoa é obrigatório.")]
         public int PersonId { get; set; }
 
-        // Propriedade de navegação para a entidade Person
+        // Propriedade de navegacão para a entidade Person
         [JsonIgnore]
         public Person? Person { get; set; }
     }
