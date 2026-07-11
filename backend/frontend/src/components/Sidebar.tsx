@@ -27,15 +27,14 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                     top: 0,
                     alignSelf: 'stretch',
                     borderRadius: 0,
-                    borderRight: { xs: 'none', md: '1px solid' },
-                    borderBottom: { xs: '1px solid', md: 'none' },
-                    borderColor: (t) => t.palette.mode === 'dark' ? '#1e293b' : '#e2e8f0',
+                    borderRight: 'none',
+                    borderBottom: 'none',
                     display: 'flex',
                     flexDirection: { xs: 'row', md: 'column' },
                     alignItems: { xs: 'center', md: 'stretch' },
                     justifyContent: 'space-between',
                     p: { xs: 2, md: 3 },
-                    backgroundColor: (t) => t.palette.mode === 'dark' ? '#0b0f19' : '#ffffff',
+                    backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1d1a39' : '#ede9fe',
                     zIndex: 1100,
                 }}
             >
@@ -73,12 +72,14 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                             justifyContent: 'flex-start',
                             py: 1.5,
                             px: 2,
-                            backgroundColor: (t) => t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.08)',
-                            color: '#6366f1',
+                            backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#c7d2fe' : '#ffffff',
+                            color: (theme) => theme.palette.mode === 'dark' ? '#110f20' : '#4f46e5',
                             borderRadius: '12px',
                             fontWeight: 700,
+                            boxShadow: (theme) => theme.palette.mode === 'dark' ? 'none' : '0 4px 12px rgba(99, 102, 241, 0.05)',
                             '&:hover': {
-                                backgroundColor: (t) => t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.12)',
+                                backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#a5b4fc' : '#ffffff',
+                                opacity: 0.95
                             }
                         }}
                     >
@@ -93,8 +94,10 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                             py: 1.5,
                             px: 2,
                             borderRadius: '12px',
-                            color: 'text.secondary',
-                            opacity: 0.6,
+                            color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.45)',
+                            '&.Mui-disabled': {
+                                color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.3) !important' : 'rgba(0, 0, 0, 0.3) !important',
+                            }
                         }}
                     >
                         Transações
@@ -108,8 +111,10 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                             py: 1.5,
                             px: 2,
                             borderRadius: '12px',
-                            color: 'text.secondary',
-                            opacity: 0.6,
+                            color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.45)',
+                            '&.Mui-disabled': {
+                                color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.3) !important' : 'rgba(0, 0, 0, 0.3) !important',
+                            }
                         }}
                     >
                         Totais
@@ -125,20 +130,29 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                         justifyContent: { xs: 'center', md: 'space-between' },
                         width: { xs: 'auto', md: '100%' },
                         pt: { xs: 0, md: 2 }, 
-                        borderTop: { xs: 'none', md: '1px solid' }, 
-                        borderColor: (t) => t.palette.mode === 'dark' ? '#1e293b' : '#f1f5f9',
+                        borderTop: 'none',
                     }}
                 >
                     <Avatar sx={{ bgcolor: '#10b981', color: '#ffffff', width: 32, height: 32 }}>
                         <PersonIcon fontSize="small" />
                     </Avatar>
-                    <IconButton onClick={onToggleDarkMode} color="inherit" sx={{ border: '1px solid', borderColor: (t) => t.palette.mode === 'dark' ? '#334155' : '#cbd5e1', borderRadius: '10px', p: 0.75 }}>
+                    <IconButton 
+                        onClick={onToggleDarkMode} 
+                        sx={{ 
+                            color: 'text.primary', 
+                            borderRadius: '10px', 
+                            p: 0.75,
+                            '&:hover': {
+                                backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)'
+                            }
+                        }}
+                    >
                         {darkMode ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
                     </IconButton>
                 </Stack>
             </Paper>
 
-            {/* Bottom Navigation Mobile) */}
+            {/* Bottom Navigation Mobile */}
             <Paper 
                 elevation={10} 
                 sx={{ 
@@ -149,9 +163,8 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                     right: 0, 
                     zIndex: 1200,
                     borderRadius: 0,
-                    borderTop: '1px solid',
-                    borderColor: (t) => t.palette.mode === 'dark' ? '#1e293b' : '#e2e8f0',
-                    backgroundColor: (t) => t.palette.mode === 'dark' ? '#0b0f19' : '#ffffff',
+                    borderTop: 'none',
+                    backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1d1a39' : '#ede9fe',
                     height: 64,
                     justifyContent: 'space-around',
                     alignItems: 'center'
@@ -163,12 +176,19 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                     sx={{
                         flexDirection: 'column',
                         '& .MuiButton-startIcon': { margin: 0, marginBottom: '2px' },
-                        color: '#6366f1',
+                        color: (theme) => theme.palette.mode === 'dark' ? '#110f20' : '#4f46e5',
+                        backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#c7d2fe' : '#ffffff',
+                        borderRadius: '12px',
                         fontSize: '0.7rem',
                         fontWeight: 700,
                         textTransform: 'none',
                         py: 0.5,
-                        minWidth: 64
+                        px: 1.5,
+                        minWidth: 64,
+                        boxShadow: (theme) => theme.palette.mode === 'dark' ? 'none' : '0 4px 12px rgba(99, 102, 241, 0.04)',
+                        '&:hover': {
+                            backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#a5b4fc' : '#ffffff',
+                        }
                     }}
                 >
                     Pessoas
@@ -180,12 +200,14 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                     sx={{
                         flexDirection: 'column',
                         '& .MuiButton-startIcon': { margin: 0, marginBottom: '2px' },
-                        color: 'text.secondary',
-                        opacity: 0.5,
+                        color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.45)',
                         fontSize: '0.7rem',
                         textTransform: 'none',
                         py: 0.5,
-                        minWidth: 64
+                        minWidth: 64,
+                        '&.Mui-disabled': {
+                            color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.3) !important' : 'rgba(0, 0, 0, 0.3) !important',
+                        }
                     }}
                 >
                     Transações
@@ -197,12 +219,14 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                     sx={{
                         flexDirection: 'column',
                         '& .MuiButton-startIcon': { margin: 0, marginBottom: '2px' },
-                        color: 'text.secondary',
-                        opacity: 0.5,
+                        color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.45)',
                         fontSize: '0.7rem',
                         textTransform: 'none',
                         py: 0.5,
-                        minWidth: 64
+                        minWidth: 64,
+                        '&.Mui-disabled': {
+                            color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.3) !important' : 'rgba(0, 0, 0, 0.3) !important',
+                        }
                     }}
                 >
                     Totais
