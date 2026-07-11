@@ -3,3 +3,14 @@ export interface Person {
     name: string;
     age: number;
 }
+
+export type TransactionType = 'Receita' | 'Despesa';
+
+export interface Transaction {
+    id?: number;
+    description: string;
+    value: number;
+    type: TransactionType;
+    personId: number;
+}
+
