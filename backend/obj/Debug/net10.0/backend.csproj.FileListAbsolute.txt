@@ -151,3 +151,4 @@
 /home/joao-kennedy/Imagens/Projeto/backend/obj/Debug/net10.0/backend.pdb
 /home/joao-kennedy/Imagens/Projeto/backend/obj/Debug/net10.0/backend.genruntimeconfig.cache
 /home/joao-kennedy/Imagens/Projeto/backend/obj/Debug/net10.0/ref/backend.dll
+/home/joao-kennedy/Imagens/Projeto/backend/obj/Debug/net10.0/backend.sourcelink.json
