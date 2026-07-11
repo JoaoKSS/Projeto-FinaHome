@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Backend.Models;
 
 namespace Backend.Data
 {
@@ -12,5 +13,7 @@ namespace Backend.Data
         {
         }
 
+        // Tabela de pessoas no banco de dados
+        public DbSet<Person> People => Set<Person>();
     }
 }
