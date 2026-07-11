@@ -10,12 +10,72 @@ import PersonIcon from '@mui/icons-material/Person';
 interface SidebarProps {
     darkMode: boolean;
     onToggleDarkMode: () => void;
+    activeTab: 'people' | 'transactions' | 'totals';
+    onTabChange: (tab: 'people' | 'transactions' | 'totals') => void;
 }
 
-export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
+export const Sidebar = ({ darkMode, onToggleDarkMode, activeTab, onTabChange }: SidebarProps) => {
+    // Helper para gerar estilos dinâmicos de botões Desktop
+    const getButtonStyle = (tab: 'people' | 'transactions' | 'totals') => {
+        const isActive = activeTab === tab;
+        return {
+            justifyContent: 'flex-start',
+            py: 1.5,
+            px: 2,
+            backgroundColor: (theme: any) => isActive 
+                ? (theme.palette.mode === 'dark' ? '#c7d2fe' : '#ffffff')
+                : 'transparent',
+            color: (theme: any) => isActive
+                ? (theme.palette.mode === 'dark' ? '#110f20' : '#4f46e5')
+                : (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.65)'),
+            borderRadius: '12px',
+            fontWeight: isActive ? 700 : 600,
+            textTransform: 'none' as const,
+            boxShadow: (theme: any) => isActive && theme.palette.mode !== 'dark' 
+                ? '0 4px 12px rgba(99, 102, 241, 0.05)' 
+                : 'none',
+            '&:hover': {
+                backgroundColor: (theme: any) => isActive
+                    ? (theme.palette.mode === 'dark' ? '#a5b4fc' : '#ffffff')
+                    : (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)'),
+                opacity: 0.95
+            }
+        };
+    };
+
+    // Helper para gerar estilos dinâmicos de botões Mobile
+    const getMobileButtonStyle = (tab: 'people' | 'transactions' | 'totals') => {
+        const isActive = activeTab === tab;
+        return {
+            flexDirection: 'column' as const,
+            '& .MuiButton-startIcon': { margin: 0, marginBottom: '2px' },
+            color: (theme: any) => isActive
+                ? (theme.palette.mode === 'dark' ? '#110f20' : '#4f46e5')
+                : (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.55)'),
+            backgroundColor: (theme: any) => isActive 
+                ? (theme.palette.mode === 'dark' ? '#c7d2fe' : '#ffffff')
+                : 'transparent',
+            borderRadius: '12px',
+            fontSize: '0.7rem',
+            fontWeight: isActive ? 700 : 600,
+            textTransform: 'none' as const,
+            py: 0.5,
+            px: 1.5,
+            minWidth: 64,
+            boxShadow: (theme: any) => isActive && theme.palette.mode !== 'dark' 
+                ? '0 4px 12px rgba(99, 102, 241, 0.04)' 
+                : 'none',
+            '&:hover': {
+                backgroundColor: (theme: any) => isActive
+                    ? (theme.palette.mode === 'dark' ? '#a5b4fc' : '#ffffff')
+                    : (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)'),
+            }
+        };
+    };
+
     return (
         <>
-            {/* Sidebar principal */}
+            {/* Sidebar principal Desktop*/}
             <Paper
                 elevation={0}
                 sx={{
@@ -68,60 +128,30 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                     <Button
                         variant="text"
                         startIcon={<PeopleIcon />}
-                        sx={{
-                            justifyContent: 'flex-start',
-                            py: 1.5,
-                            px: 2,
-                            backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#c7d2fe' : '#ffffff',
-                            color: (theme) => theme.palette.mode === 'dark' ? '#110f20' : '#4f46e5',
-                            borderRadius: '12px',
-                            fontWeight: 700,
-                            boxShadow: (theme) => theme.palette.mode === 'dark' ? 'none' : '0 4px 12px rgba(99, 102, 241, 0.05)',
-                            '&:hover': {
-                                backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#a5b4fc' : '#ffffff',
-                                opacity: 0.95
-                            }
-                        }}
+                        onClick={() => onTabChange('people')}
+                        sx={getButtonStyle('people')}
                     >
                         Pessoas
                     </Button>
                     <Button
                         variant="text"
                         startIcon={<ReceiptIcon />}
-                        disabled
-                        sx={{
-                            justifyContent: 'flex-start',
-                            py: 1.5,
-                            px: 2,
-                            borderRadius: '12px',
-                            color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.45)',
-                            '&.Mui-disabled': {
-                                color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.3) !important' : 'rgba(0, 0, 0, 0.3) !important',
-                            }
-                        }}
+                        onClick={() => onTabChange('transactions')}
+                        sx={getButtonStyle('transactions')}
                     >
                         Transações
                     </Button>
                     <Button
                         variant="text"
                         startIcon={<BarChartIcon />}
-                        disabled
-                        sx={{
-                            justifyContent: 'flex-start',
-                            py: 1.5,
-                            px: 2,
-                            borderRadius: '12px',
-                            color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.45)',
-                            '&.Mui-disabled': {
-                                color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.3) !important' : 'rgba(0, 0, 0, 0.3) !important',
-                            }
-                        }}
+                        onClick={() => onTabChange('totals')}
+                        sx={getButtonStyle('totals')}
                     >
                         Totais
                     </Button>
                 </Stack>
 
-                {/* Rodapé do Menu */}
+                {/* Rodapé do Menu Desktop */}
                 <Stack 
                     direction="row"
                     spacing={1.5}
@@ -133,7 +163,7 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                         borderTop: 'none',
                     }}
                 >
-                    <Avatar sx={{ bgcolor: '#10b981', color: '#ffffff', width: 32, height: 32 }}>
+                    <Avatar sx={{ bgcolor: '#10b981', color: '#ffffff', width: 32, height: 32, display: { xs: 'none', md: 'flex' } }}>
                         <PersonIcon fontSize="small" />
                     </Avatar>
                     <IconButton 
@@ -173,61 +203,24 @@ export const Sidebar = ({ darkMode, onToggleDarkMode }: SidebarProps) => {
                 <Button
                     variant="text"
                     startIcon={<PeopleIcon />}
-                    sx={{
-                        flexDirection: 'column',
-                        '& .MuiButton-startIcon': { margin: 0, marginBottom: '2px' },
-                        color: (theme) => theme.palette.mode === 'dark' ? '#110f20' : '#4f46e5',
-                        backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#c7d2fe' : '#ffffff',
-                        borderRadius: '12px',
-                        fontSize: '0.7rem',
-                        fontWeight: 700,
-                        textTransform: 'none',
-                        py: 0.5,
-                        px: 1.5,
-                        minWidth: 64,
-                        boxShadow: (theme) => theme.palette.mode === 'dark' ? 'none' : '0 4px 12px rgba(99, 102, 241, 0.04)',
-                        '&:hover': {
-                            backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#a5b4fc' : '#ffffff',
-                        }
-                    }}
+                    onClick={() => onTabChange('people')}
+                    sx={getMobileButtonStyle('people')}
                 >
                     Pessoas
                 </Button>
                 <Button
                     variant="text"
                     startIcon={<ReceiptIcon />}
-                    disabled
-                    sx={{
-                        flexDirection: 'column',
-                        '& .MuiButton-startIcon': { margin: 0, marginBottom: '2px' },
-                        color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.45)',
-                        fontSize: '0.7rem',
-                        textTransform: 'none',
-                        py: 0.5,
-                        minWidth: 64,
-                        '&.Mui-disabled': {
-                            color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.3) !important' : 'rgba(0, 0, 0, 0.3) !important',
-                        }
-                    }}
+                    onClick={() => onTabChange('transactions')}
+                    sx={getMobileButtonStyle('transactions')}
                 >
                     Transações
                 </Button>
                 <Button
                     variant="text"
                     startIcon={<BarChartIcon />}
-                    disabled
-                    sx={{
-                        flexDirection: 'column',
-                        '& .MuiButton-startIcon': { margin: 0, marginBottom: '2px' },
-                        color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.45)',
-                        fontSize: '0.7rem',
-                        textTransform: 'none',
-                        py: 0.5,
-                        minWidth: 64,
-                        '&.Mui-disabled': {
-                            color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.3) !important' : 'rgba(0, 0, 0, 0.3) !important',
-                        }
-                    }}
+                    onClick={() => onTabChange('totals')}
+                    sx={getMobileButtonStyle('totals')}
                 >
                     Totais
                 </Button>

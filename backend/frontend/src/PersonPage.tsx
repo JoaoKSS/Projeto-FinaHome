@@ -6,36 +6,19 @@ import {
     Button,
     Card,
     CardContent,
-    ThemeProvider,
-    CssBaseline,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
-// Tipos, Temas e Componentes
+// Tipos e Componentes
 import type { Person } from './types';
-import { getCustomTheme } from './theme';
-import { Sidebar } from './components/Sidebar';
+import { api } from './services/api';
 import { PersonTable } from './components/PersonTable';
 import { PersonFormDialog } from './components/PersonFormDialog';
 import { PersonDetailsDialog } from './components/PersonDetailsDialog';
 import { DeleteConfirmDialog } from './components/DeleteConfirmDialog';
 import { ToastNotification } from './components/ToastNotification';
 
-const API_URL = 'http://localhost:5225/api/person';
-
-function PersonPage() {
-    // Estado de controle do tema escuro
-    const [darkMode, setDarkMode] = useState(() => {
-        const savedTheme = localStorage.getItem('theme');
-        return savedTheme === 'dark';
-    });
-
-    useEffect(() => {
-        localStorage.setItem('theme', darkMode ? 'dark' : 'light');
-    }, [darkMode]);
-
-    const theme = useMemo(() => getCustomTheme(darkMode), [darkMode]);
-
+export function PersonPage() {
     // Estados de dados
     const [people, setPeople] = useState<Person[]>([]);
     const [loading, setLoading] = useState(true);
@@ -46,7 +29,7 @@ function PersonPage() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [deleteConfirmPerson, setDeleteConfirmPerson] = useState<Person | null>(null);
 
-    // Toast
+    // Toast local para notificações
     const [toast, setToast] = useState<{
         open: boolean;
         message: string;
@@ -89,12 +72,10 @@ function PersonPage() {
     useEffect(() => {
         const fetchPeople = async () => {
             try {
-                const response = await fetch(API_URL);
-                if (!response.ok) throw new Error('Não foi possível carregar os dados.');
-                const data = await response.json();
+                const data = await api.getPeople();
                 setPeople(data);
             } catch (err: any) {
-                showToast(err.message, 'warning');
+                showToast(err.message || 'Não foi possível carregar os dados.', 'warning');
             } finally {
                 setLoading(false);
             }
@@ -137,21 +118,14 @@ function PersonPage() {
         return result;
     }, [people, filterId, filterName, filterAge, sortColumn, sortDirection]);
 
-    // Handlers
+    // Salvar ou Atualizar
     const handleFormSubmit = async (name: string, age: number) => {
         const personData = { name, age };
 
         try {
-            if (editingPerson) {
+            if (editingPerson && editingPerson.id !== undefined) {
                 // Atualizando registro existente
-                const response = await fetch(`${API_URL}/${editingPerson.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: editingPerson.id, ...personData }),
-                });
-
-                if (!response.ok) throw new Error('Erro ao salvar alterações.');
-
+                await api.updatePerson(editingPerson.id, { id: editingPerson.id, ...personData });
                 setPeople((prev) =>
                     prev.map((p) => (p.id === editingPerson.id ? { ...p, ...personData } : p))
                 );
@@ -159,154 +133,132 @@ function PersonPage() {
                 showToast('Cadastro atualizado com sucesso!', 'success');
             } else {
                 // Criando novo registro
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(personData),
-                });
-
-                if (!response.ok) throw new Error('Erro ao cadastrar pessoa.');
-
-                const newPerson = await response.json();
+                const newPerson = await api.createPerson(personData);
                 setPeople((prev) => [...prev, newPerson]);
                 setIsCreateOpen(false);
                 showToast('Cadastro realizado com sucesso!', 'success');
             }
         } catch (err: any) {
-            showToast(err.message, 'warning');
+            showToast(err.message || 'Erro ao salvar alterações.', 'warning');
         }
     };
 
+    // Excluir
     const handleConfirmDelete = async () => {
-        if (!deleteConfirmPerson || !deleteConfirmPerson.id) return;
+        if (!deleteConfirmPerson || deleteConfirmPerson.id === undefined) return;
         try {
-            const response = await fetch(`${API_URL}/${deleteConfirmPerson.id}`, {
-                method: 'DELETE',
-            });
-
-            if (!response.ok) throw new Error('Erro ao excluir pessoa.');
-
+            await api.deletePerson(deleteConfirmPerson.id);
             setPeople((prev) => prev.filter((p) => p.id !== deleteConfirmPerson.id));
             if (viewingPerson?.id === deleteConfirmPerson.id) {
                 setViewingPerson(null);
             }
             showToast('Registro excluído com sucesso!', 'success');
         } catch (err: any) {
-            showToast(err.message, 'warning');
+            showToast(err.message || 'Erro ao excluir pessoa.', 'warning');
         } finally {
             setDeleteConfirmPerson(null);
         }
     };
 
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, minHeight: '100vh', bgcolor: 'background.default' }}>
-                <Sidebar darkMode={darkMode} onToggleDarkMode={() => setDarkMode(!darkMode)} />
-
-                {/* Área de Conteúdo Principal */}
-                <Container maxWidth="xl" sx={{ pt: { xs: 3, md: 4 }, pb: { xs: 10, md: 4 }, px: { xs: 1, sm: 2, md: 3 }, flexGrow: 1 }}>
+        <Container maxWidth="xl" sx={{ pt: { xs: 3, md: 4 }, pb: { xs: 10, md: 4 }, px: { xs: 1, sm: 2, md: 3 }, flexGrow: 1 }}>
+            <Box>
+                {/* Cabeçalho */}
+                <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: { xs: 'column', sm: 'row' }, 
+                    justifyContent: 'space-between', 
+                    alignItems: { xs: 'flex-start', sm: 'center' }, 
+                    gap: 2, 
+                    mb: 4 
+                }}>
                     <Box>
-                        {/* Cabeçalho */}
-                        <Box sx={{ 
-                            display: 'flex', 
-                            flexDirection: { xs: 'column', sm: 'row' }, 
-                            justifyContent: 'space-between', 
-                            alignItems: { xs: 'flex-start', sm: 'center' }, 
-                            gap: 2, 
-                            mb: 4 
-                        }}>
-                            <Box>
-                                <Typography variant="h4" component="h2" sx={{ mb: 0, color: 'text.primary', fontSize: { xs: '1.75rem', sm: '2.125rem' } }}>
-                                    Pessoas Registradas
-                                </Typography>
-                            </Box>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<AddIcon />}
-                                onClick={() => setIsCreateOpen(true)}
-                                sx={{ 
-                                    py: 1.2, 
-                                    px: 2.5, 
-                                    width: 'auto',
-                                    alignSelf: { xs: 'flex-start', sm: 'auto' }
-                                }}
-                            >
-                                Nova Pessoa
-                            </Button>
-                        </Box>
-
-                        {/* Container da tabela */}
-                        <Card variant="outlined">
-                            <CardContent sx={{ p: 0 }}>
-                                <PersonTable
-                                    people={filteredAndSortedPeople}
-                                    loading={loading}
-                                    filterId={filterId}
-                                    setFilterId={setFilterId}
-                                    filterName={filterName}
-                                    setFilterName={setFilterName}
-                                    filterAge={filterAge}
-                                    setFilterAge={setFilterAge}
-                                    sortColumn={sortColumn}
-                                    sortDirection={sortDirection}
-                                    onSort={handleSort}
-                                    onView={setViewingPerson}
-                                    onEdit={setEditingPerson}
-                                    onDelete={setDeleteConfirmPerson}
-                                />
-                            </CardContent>
-                        </Card>
-                        
-                        {/* Indicador de Quantidade */}
-                        {!loading && (
-                            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', px: 1 }}>
-                                <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary', fontFamily: 'monospace' }}>
-                                    Exibindo {filteredAndSortedPeople.length === 0 ? '0-0' : `1-${filteredAndSortedPeople.length}`} de {people.length} itens.
-                                </Typography>
-                            </Box>
-                        )}
+                        <Typography variant="h4" component="h2" sx={{ mb: 0, color: 'text.primary', fontSize: { xs: '1.75rem', sm: '2.125rem' } }}>
+                            Pessoas Registradas
+                        </Typography>
                     </Box>
-
-                    {/* Modais */}
-                    <PersonFormDialog
-                        open={isCreateOpen || editingPerson !== null}
-                        person={editingPerson}
-                        onClose={() => {
-                            setIsCreateOpen(false);
-                            setEditingPerson(null);
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<AddIcon />}
+                        onClick={() => setIsCreateOpen(true)}
+                        sx={{ 
+                            py: 1.2, 
+                            px: 2.5, 
+                            width: 'auto',
+                            alignSelf: { xs: 'flex-start', sm: 'auto' }
                         }}
-                        onSubmit={handleFormSubmit}
-                    />
+                    >
+                        Nova Pessoa
+                    </Button>
+                </Box>
 
-                    <PersonDetailsDialog
-                        open={viewingPerson !== null}
-                        person={viewingPerson}
-                        onClose={() => setViewingPerson(null)}
-                        onStartEdit={(person) => {
-                            setViewingPerson(null);
-                            setEditingPerson(person);
-                        }}
-                    />
-
-                    <DeleteConfirmDialog
-                        open={deleteConfirmPerson !== null}
-                        person={deleteConfirmPerson}
-                        onClose={() => setDeleteConfirmPerson(null)}
-                        onConfirm={handleConfirmDelete}
-                    />
-
-                    <ToastNotification
-                        open={toast.open}
-                        message={toast.message}
-                        severity={toast.severity}
-                        onClose={handleCloseToast}
-                    />
-                </Container>
+                {/* Tabela */}
+                <Card variant="outlined">
+                    <CardContent sx={{ p: 0 }}>
+                        <PersonTable
+                            people={filteredAndSortedPeople}
+                            loading={loading}
+                            filterId={filterId}
+                            setFilterId={setFilterId}
+                            filterName={filterName}
+                            setFilterName={setFilterName}
+                            filterAge={filterAge}
+                            setFilterAge={setFilterAge}
+                            sortColumn={sortColumn}
+                            sortDirection={sortDirection}
+                            onSort={handleSort}
+                            onView={setViewingPerson}
+                            onEdit={setEditingPerson}
+                            onDelete={setDeleteConfirmPerson}
+                        />
+                    </CardContent>
+                </Card>
+                
+                {/* Indicador de Quantidade */}
+                {!loading && (
+                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', px: 1 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary', fontFamily: 'monospace' }}>
+                            Exibindo {filteredAndSortedPeople.length === 0 ? '0-0' : `1-${filteredAndSortedPeople.length}`} de {people.length} itens.
+                        </Typography>
+                    </Box>
+                )}
             </Box>
-        </ThemeProvider>
+
+            {/* Modais */}
+            <PersonFormDialog
+                open={isCreateOpen || editingPerson !== null}
+                person={editingPerson}
+                onClose={() => {
+                    setIsCreateOpen(false);
+                    setEditingPerson(null);
+                }}
+                onSubmit={handleFormSubmit}
+            />
+
+            <PersonDetailsDialog
+                open={viewingPerson !== null}
+                person={viewingPerson}
+                onClose={() => setViewingPerson(null)}
+                onStartEdit={(person) => {
+                    setViewingPerson(null);
+                    setEditingPerson(person);
+                }}
+            />
+
+            <DeleteConfirmDialog
+                open={deleteConfirmPerson !== null}
+                person={deleteConfirmPerson}
+                onClose={() => setDeleteConfirmPerson(null)}
+                onConfirm={handleConfirmDelete}
+            />
+
+            <ToastNotification
+                open={toast.open}
+                message={toast.message}
+                severity={toast.severity}
+                onClose={handleCloseToast}
+            />
+        </Container>
     );
 }
-
-export default PersonPage;
