@@ -3,6 +3,9 @@ using Backend.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Habilita o suporte para controllers no projeto
+builder.Services.AddControllers();
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -10,6 +13,17 @@ builder.Services.AddOpenApi();
 // Registra o AppDbContext para usar o SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configurand o cors para permitir requisicoes vindas do front
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirReact", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -21,12 +35,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Ativa a politica de cors configurada acima
+app.UseCors("PermitirReact");
+
 // Aplica as migrations
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
 }
+
+// Mapea os endpoints dos controladores
+app.MapControllers();
 
 var summaries = new[]
 {
