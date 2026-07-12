@@ -65,11 +65,8 @@ export const PersonFormDialog = ({ open, person, onClose, onSubmit }: PersonForm
             <Box sx={{ p: 1 }}>
                 <Box component="form" onSubmit={handleSubmit}>
                     <DialogContent sx={{ pb: 1, pt: 3 }}>
-                        <Typography variant="h5" sx={{ mb: 1, fontWeight: 'bold' }}>
+                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>
                             {person ? 'Editar Cadastro' : 'Nova Pessoa'}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                            {person ? 'Atualize as informações do participante.' : 'Preencha os campos abaixo para registrar um novo integrante.'}
                         </Typography>
 
                         <Stack spacing={3}>

@@ -163,17 +163,23 @@ export const Sidebar = ({ darkMode, onToggleDarkMode, activeTab, onTabChange }: 
                         borderTop: 'none',
                     }}
                 >
-                    <Avatar sx={{ bgcolor: '#10b981', color: '#ffffff', width: 32, height: 32, display: { xs: 'none', md: 'flex' } }}>
+                    <Avatar sx={{ bgcolor: '#10b981', color: '#ffffff', width: 32, height: 32, display: 'flex' }}>
                         <PersonIcon fontSize="small" />
                     </Avatar>
                     <IconButton 
                         onClick={onToggleDarkMode} 
                         sx={{ 
                             color: 'text.primary', 
-                            borderRadius: '10px', 
-                            p: 0.75,
+                            borderRadius: '50%',
+                            width: 32,
+                            height: 32,
+                            p: 0,
+                            backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : '#ffffff',
+                            boxShadow: (theme) => theme.palette.mode === 'dark' ? 'none' : '0 2px 6px rgba(0, 0, 0, 0.08)',
+                            transition: 'all 0.2s ease',
                             '&:hover': {
-                                backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)'
+                                backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.05)',
+                                transform: 'scale(1.05)'
                             }
                         }}
                     >
