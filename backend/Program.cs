@@ -38,11 +38,16 @@ app.UseHttpsRedirection();
 // Ativa a politica de cors configurada acima
 app.UseCors("PermitirReact");
 
-// Aplica as migrations
+// Aplica as migrations e popula com o seed apenas se solicitado via argumento --seed
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
+
+    if (args.Contains("--seed"))
+    {
+        DbSeeder.Seed(dbContext);
+    }
 }
 
 // Mapea os endpoints dos controladores
