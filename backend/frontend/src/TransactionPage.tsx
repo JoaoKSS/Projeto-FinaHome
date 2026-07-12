@@ -5,19 +5,25 @@ import {
     Box, 
     Button, 
     Card, 
-    CardContent 
+    CardContent,
+    useTheme,
+    useMediaQuery
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
-// Tipos, Componentes e APIs
-import type { Transaction, Person, TransactionType } from './types';
+// Tipos, Componentes
+import type { Transaction, Person } from './types';
 import { api } from './services/api';
 import { TransactionTable } from './components/TransactionTable';
+import { TransactionMobileList } from './components/TransactionMobileList';
 import { TransactionFormDialog } from './components/TransactionFormDialog';
 import { TransactionDetailsDialog } from './components/TransactionDetailsDialog';
 import { ToastNotification } from './components/ToastNotification';
 
 export function TransactionPage() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [people, setPeople] = useState<Person[]>([]);
     const [loading, setLoading] = useState(true);
@@ -98,55 +104,46 @@ export function TransactionPage() {
     const handleCreateTransaction = async (
         description: string, 
         value: number, 
-        type: TransactionType, 
+        type: 'Receita' | 'Despesa', 
         personId: number
     ) => {
         try {
-            const newTransaction = await api.createTransaction({
-                description,
-                value,
-                type,
-                personId
-            });
+            const newTransaction = await api.createTransaction({ description, value, type, personId });
             setTransactions((prev) => [...prev, newTransaction]);
             setIsCreateOpen(false);
             showToast('Transação registrada com sucesso!', 'success');
         } catch (err: any) {
-            showToast(err.message || 'Erro ao registrar transação.', 'warning');
+            showToast(err.message || 'Erro ao registrar transação.', 'error');
         }
     };
 
-    // filtros e ordenação em memória no frontend
+    // Processamento de filtros e ordenação
     const filteredAndSortedTransactions = useMemo(() => {
         let result = [...transactions];
 
         // Filtro por ID
         if (filterId.trim()) {
-            result = result.filter((t) => 
-                t.id?.toString().includes(filterId.trim())
-            );
+            result = result.filter((t) => t.id?.toString().includes(filterId.trim()));
         }
 
         // Filtro por Descriao
         if (filterDescription.trim()) {
-            result = result.filter((t) => 
+            result = result.filter((t) =>
                 t.description.toLowerCase().includes(filterDescription.trim().toLowerCase())
             );
         }
 
         // Filtro por Valor
         if (filterValue.trim()) {
-            result = result.filter((t) => 
-                t.value.toString().includes(filterValue.trim())
-            );
+            result = result.filter((t) => t.value.toString().includes(filterValue.trim()));
         }
 
-        // Filtro por Tipo
+        // Filtro por Tipo Receita/Despesa
         if (filterType) {
             result = result.filter((t) => t.type === filterType);
         }
 
-        // Filtro por Nome do Responsvel
+        // Filtro por Responsável
         if (filterPersonName.trim()) {
             result = result.filter((t) => {
                 const p = people.find((x) => x.id === t.personId);
@@ -217,30 +214,52 @@ export function TransactionPage() {
                     </Button>
                 </Box>
 
-                {/* Tabela de Transações */}
-                <Card variant="outlined">
-                    <CardContent sx={{ p: 0 }}>
-                        <TransactionTable
-                            transactions={filteredAndSortedTransactions}
-                            people={people}
-                            loading={loading}
-                            filterId={filterId}
-                            setFilterId={setFilterId}
-                            filterDescription={filterDescription}
-                            setFilterDescription={setFilterDescription}
-                            filterValue={filterValue}
-                            setFilterValue={setFilterValue}
-                            filterType={filterType}
-                            setFilterType={setFilterType}
-                            filterPersonName={filterPersonName}
-                            setFilterPersonName={setFilterPersonName}
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                            onView={handleViewTransaction}
-                        />
-                    </CardContent>
-                </Card>
+                {/* Tabela ou Lista */}
+                {!isMobile ? (
+                    <Card variant="outlined">
+                        <CardContent sx={{ p: 0 }}>
+                            <TransactionTable
+                                transactions={filteredAndSortedTransactions}
+                                people={people}
+                                loading={loading}
+                                filterId={filterId}
+                                setFilterId={setFilterId}
+                                filterDescription={filterDescription}
+                                setFilterDescription={setFilterDescription}
+                                filterValue={filterValue}
+                                setFilterValue={setFilterValue}
+                                filterType={filterType}
+                                setFilterType={setFilterType}
+                                filterPersonName={filterPersonName}
+                                setFilterPersonName={setFilterPersonName}
+                                sortColumn={sortColumn}
+                                sortDirection={sortDirection}
+                                onSort={handleSort}
+                                onView={handleViewTransaction}
+                            />
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <TransactionMobileList
+                        transactions={filteredAndSortedTransactions}
+                        people={people}
+                        loading={loading}
+                        filterId={filterId}
+                        setFilterId={setFilterId}
+                        filterDescription={filterDescription}
+                        setFilterDescription={setFilterDescription}
+                        filterValue={filterValue}
+                        setFilterValue={setFilterValue}
+                        filterType={filterType}
+                        setFilterType={setFilterType}
+                        filterPersonName={filterPersonName}
+                        setFilterPersonName={setFilterPersonName}
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                        onView={handleViewTransaction}
+                    />
+                )}
 
                 {/* Contador de Itens */}
                 {!loading && (

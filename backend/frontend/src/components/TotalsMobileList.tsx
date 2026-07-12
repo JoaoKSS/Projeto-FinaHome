@@ -235,7 +235,7 @@ export function TotalsMobileList({
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
                             <AccountBalanceWalletIcon color="primary" fontSize="small" />
                             <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'text.primary' }}>
-                                Totalizador Geral (Filtrado)
+                                Total Geral
                             </Typography>
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', mb: 0.8 }}>

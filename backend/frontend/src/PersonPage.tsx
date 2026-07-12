@@ -6,6 +6,8 @@ import {
     Button,
     Card,
     CardContent,
+    useTheme,
+    useMediaQuery
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -13,12 +15,16 @@ import AddIcon from '@mui/icons-material/Add';
 import type { Person } from './types';
 import { api } from './services/api';
 import { PersonTable } from './components/PersonTable';
+import { PersonMobileList } from './components/PersonMobileList';
 import { PersonFormDialog } from './components/PersonFormDialog';
 import { PersonDetailsDialog } from './components/PersonDetailsDialog';
 import { DeleteConfirmDialog } from './components/DeleteConfirmDialog';
 import { ToastNotification } from './components/ToastNotification';
 
 export function PersonPage() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
     // Estados de dados
     const [people, setPeople] = useState<Person[]>([]);
     const [loading, setLoading] = useState(true);
@@ -193,27 +199,46 @@ export function PersonPage() {
                     </Button>
                 </Box>
 
-                {/* Tabela */}
-                <Card variant="outlined">
-                    <CardContent sx={{ p: 0 }}>
-                        <PersonTable
-                            people={filteredAndSortedPeople}
-                            loading={loading}
-                            filterId={filterId}
-                            setFilterId={setFilterId}
-                            filterName={filterName}
-                            setFilterName={setFilterName}
-                            filterAge={filterAge}
-                            setFilterAge={setFilterAge}
-                            sortColumn={sortColumn}
-                            sortDirection={sortDirection}
-                            onSort={handleSort}
-                            onView={setViewingPerson}
-                            onEdit={setEditingPerson}
-                            onDelete={setDeleteConfirmPerson}
-                        />
-                    </CardContent>
-                </Card>
+                {/* Tabela ou Lista */}
+                {!isMobile ? (
+                    <Card variant="outlined">
+                        <CardContent sx={{ p: 0 }}>
+                            <PersonTable
+                                people={filteredAndSortedPeople}
+                                loading={loading}
+                                filterId={filterId}
+                                setFilterId={setFilterId}
+                                filterName={filterName}
+                                setFilterName={setFilterName}
+                                filterAge={filterAge}
+                                setFilterAge={setFilterAge}
+                                sortColumn={sortColumn}
+                                sortDirection={sortDirection}
+                                onSort={handleSort}
+                                onView={setViewingPerson}
+                                onEdit={setEditingPerson}
+                                onDelete={setDeleteConfirmPerson}
+                            />
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <PersonMobileList
+                        people={filteredAndSortedPeople}
+                        loading={loading}
+                        filterId={filterId}
+                        setFilterId={setFilterId}
+                        filterName={filterName}
+                        setFilterName={setFilterName}
+                        filterAge={filterAge}
+                        setFilterAge={setFilterAge}
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                        onView={setViewingPerson}
+                        onEdit={setEditingPerson}
+                        onDelete={setDeleteConfirmPerson}
+                    />
+                )}
                 
                 {/* Indicador de Quantidade */}
                 {!loading && (
