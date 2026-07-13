@@ -19,13 +19,25 @@ O **FinaHome** é um sistema para controle financeiro doméstico desenvolvido co
    - Criação, listagem e remoção de participantes.
    - **Exclusão em cascata:** A remoção de uma pessoa deleta automaticamente todas as suas transações vinculadas no banco de dados.
 
+   | Desktop Claro | Desktop Escuro | Mobile |
+   | :---: | :---: | :---: |
+   | <img src="imagens/pessoas_desktop.png" width="600" /> | <img src="imagens/pessoas_desktop_dark.png" width="600" /> | <img src="imagens/pessoas_mobile.png" width="250" /> |
+
 2. **Cadastro de Transações**
    - Criação e listagem de movimentações financeiras.
    - **Restrição de menor de idade:** Usuários com menos de 18 anos só podem registrar transações do tipo "Despesa".
 
+   | Desktop Claro | Desktop Escuro | Mobile |
+   | :---: | :---: | :---: |
+   | <img src="imagens/transacoes_desktop.png" width="600" /> | <img src="imagens/transacoes_desktop_dark.png" width="600" /> | <img src="imagens/transacoes_mobile.png" width="250" /> |
+
 3. **Consulta de Totais**
    - Tabela consolidada com soma de receitas, despesas e saldo líquido de cada pessoa.
    - Indicador geral exibindo os totais acumulados da residência no rodapé.
+
+   | Desktop Claro | Desktop Escuro | Mobile |
+   | :---: | :---: | :---: |
+   | <img src="imagens/totais_desktop.png" width="600" /> | <img src="imagens/totais_desktop_dark.png" width="600" /> | <img src="imagens/totais_mobile.png" width="250" /> |
 
 4. **Experiência e Responsividade**
    - Suporte a alternância de tema Claro/Escuro (Dark Mode).
