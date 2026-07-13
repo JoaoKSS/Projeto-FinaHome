@@ -153,7 +153,7 @@ export const Sidebar = ({ darkMode, onToggleDarkMode, activeTab, onTabChange }: 
 
                 {/* Rodapé do Menu Desktop */}
                 <Stack 
-                    direction="row"
+                    direction={{ xs: 'row-reverse', md: 'row' }}
                     spacing={1.5}
                     sx={{ 
                         alignItems: 'center',
